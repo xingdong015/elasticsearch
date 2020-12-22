@@ -328,7 +328,17 @@ public class SearchTransportService {
                 });
             });
         TransportActionProxy.registerProxyAction(transportService, DFS_ACTION_NAME, DfsSearchResult::new);
-
+        //这里的注册特别重要、回调的关键点就在此处,此处是追踪调用lucene的关键点
+        /**
+         * 注意这里的ShardSearchRequest::new写法、由于
+         * registerRequestHandler(String action, String executor,Writeable.Reader<Request> requestReader,TransportRequestHandler<Request> handler)
+         * 方法签名中Writeable.Reader使用@FunctionInterface接口指明,说明Reader是一个接口方法,那么观察他的唯一方法
+         * V read(StreamInput in) throws IOException; 接受的是StreamInput类型,返回V类型,
+         * 对应的ShardSearchRequest::new方法 public ShardSearchRequest(StreamInput in) throws IOException
+         * 接受参数为StreamInput类型,并且返回ShardSearchRequest类型，也就是说Writeable.Reader执行ShardSearchRequest的含有一个InputStream的构造器方法
+         * 具体可以参考: https://blog.csdn.net/kegaofei/article/details/80582356
+         * java8的妙用、函数式编程语法
+         */
         transportService.registerRequestHandler(QUERY_ACTION_NAME, ThreadPool.Names.SAME, ShardSearchRequest::new,
             (request, channel, task) -> {
                 searchService.executeQueryPhase(request, (SearchShardTask) task,

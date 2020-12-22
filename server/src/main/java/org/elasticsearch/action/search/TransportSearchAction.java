@@ -478,6 +478,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
             concreteIndices[i] = indices[i].getName();
         }
         Map<String, Long> nodeSearchCounts = searchTransportService.getPendingSearchRequests();
+        //获取所有的shard信息
         GroupShardsIterator<ShardIterator> localShardsIterator = clusterService.operationRouting().searchShards(clusterState,
                 concreteIndices, routingMap, searchRequest.preference(), searchService.getResponseCollectorService(), nodeSearchCounts);
         GroupShardsIterator<SearchShardIterator> shardIterators = mergeShardsIterators(localShardsIterator, localIndices,
@@ -567,7 +568,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
                                                         ActionListener<SearchResponse> listener,
                                                         boolean preFilter,
                                                         SearchResponse.Clusters clusters) {
-        Executor executor = threadPool.executor(ThreadPool.Names.SEARCH);
+        Executor executor = threadPool.executor(ThreadPool.Names.SEARCH);//这里是获取search对应的执行线程池对象
         if (preFilter) {
             return new CanMatchPreFilterSearchPhase(logger, searchTransportService, connectionLookup,
                 aliasFilter, concreteIndexBoosts, indexRoutings, executor, searchRequest, listener, shardIterators,

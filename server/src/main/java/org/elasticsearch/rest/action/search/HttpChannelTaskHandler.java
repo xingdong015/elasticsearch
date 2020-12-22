@@ -42,6 +42,8 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * This class executes a request and associates the corresponding {@link Task} with the {@link HttpChannel} that it was originated from,
  * so that the tasks associated with a certain channel get cancelled when the underlying connection gets closed.
+ *
+ * 这个类的主要作用是执行一个request请求并且将task任务和httpChannel关联起来，这样的好处就是当底层的httpChannel关闭了之后，上层的任务也就可以取消了
  */
 public final class HttpChannelTaskHandler {
 

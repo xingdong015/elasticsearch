@@ -83,6 +83,10 @@ public abstract class BaseRestHandler implements RestHandler {
 
     @Override
     public final void handleRequest(RestRequest request, RestChannel channel, NodeClient client) throws Exception {
+        //这里的RestRequest和RestChannel都是在AbstractHttpServerTransport中实例化的,其实
+        //RestRequest对原始的httpRequest对象的封装
+        //RestChannel是对原始的httpChannel对象的封装
+
         // prepare the request for execution; has the side effect of touching the request parameters
         final RestChannelConsumer action = prepareRequest(request, client);
 
